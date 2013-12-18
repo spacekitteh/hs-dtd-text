@@ -1,22 +1,18 @@
 name: dtd-text
-version: 0.1.2.1
+version: 0.1.2.0
 synopsis: Parse and render XML DTDs
 description:
   This library provides means to parse XML Document Type Declaration (DTD) documents.
 license: BSD3
 license-file: license.txt
 author: Yitzchak Gale
-maintainer: gale@sefer.org
+maintainer: Montez Fitzpatrick
 build-type: Simple
 cabal-version: >=1.6
 category: Data, Text, XML, Parsing
 stability: experimental
 bug-reports: mailto:gale@sefer.org
 homepage: http://projects.haskell.org/dtd/
-
-source-repository head
-  type: darcs
-  location: http://code.haskell.org/dtd/dtd-text/
 
 library
   build-depends:
@@ -30,3 +26,7 @@ library
   exposed-modules:
     Data.XML.DTD.Parse
     Data.XML.DTD.Render
+
+source-repository head
+  type: git
+  location: https://github.com/m15k/hs-dtd-text/
