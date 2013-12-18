@@ -62,11 +62,12 @@ module Data.XML.DTD.Render
   ) 
   where
 
-import Blaze.ByteString.Builder (Builder)
-import Blaze.ByteString.Builder.Char.Utf8 (fromText, fromChar)
+-- import Blaze.ByteString.Builder (Builder)
+-- import Blaze.ByteString.Builder.Char.Utf8 (fromText, singleton)
 import Data.XML.DTD.Types
 import Data.XML.Types (ExternalID(..), Instruction(..))
 import Data.Text (Text)
+import Data.Text.Lazy.Builder (Builder, fromText, singleton)
 import Data.Monoid (Monoid(..))
 import Data.List (intersperse)
 import System.IO (nativeNewline, Newline(CRLF))
@@ -86,19 +87,19 @@ newline = fromText $ case nativeNewline of
 
 -- | Build a space.
 space :: Builder
-space = fromChar ' '
+space = singleton ' '
 
 -- | Build a quoted string.
 quote :: Builder -> Builder
-quote = (fromChar '"' <>) . (<> fromChar '"')
+quote = (singleton '"' <>) . (<> singleton '"')
 
 -- | Build a string quoted by angle brackets, with an exclamation mark.
 pbracket :: Builder -> Builder
-pbracket = (fromText "<!" <>) . (<> fromChar '>')
+pbracket = (fromText "<!" <>) . (<> singleton '>')
 
 -- | Build a string surround by parantheses.
 parens :: Builder -> Builder
-parens = (fromChar '(' <>) . (<> fromChar ')')
+parens = (singleton '(' <>) . (<> singleton ')')
 
 -- | Build a list of items
 buildList :: Text -> (a -> Builder) -> [a] -> Builder
@@ -162,7 +163,7 @@ buildEntityValue = quote . mconcat . map val
 
 -- | A builder for a 'PERef'.
 buildPERef :: PERef -> Builder
-buildPERef r = fromChar '%' <> fromText r <> fromChar ';'
+buildPERef r = singleton '%' <> fromText r <> singleton ';'
 
 -- | A 'Builder' for an 'ElementDecl'.
 buildElementDecl :: ElementDecl -> Builder
@@ -175,7 +176,7 @@ buildContentDecl ContentEmpty         = fromText "EMPTY"
 buildContentDecl ContentAny           = fromText "ANY"
 buildContentDecl (ContentElement cm)  = buildContentModel cm
 buildContentDecl (ContentMixed names) =
-  buildChoice fromText ("#PCDATA" : names) <> fromChar '*'
+  buildChoice fromText ("#PCDATA" : names) <> singleton '*'
 
 -- | A 'Builder' for a 'ContentModel'.
 buildContentModel :: ContentModel -> Builder
@@ -190,9 +191,9 @@ buildContentModel cm               = buildCM cm
 -- | A 'Builder' for a 'Repeat'.
 buildRepeat :: Repeat -> Builder
 buildRepeat One        = mempty
-buildRepeat ZeroOrOne  = fromChar '?'
-buildRepeat ZeroOrMore = fromChar '*'
-buildRepeat OneOrMore  = fromChar '+'
+buildRepeat ZeroOrOne  = singleton '?'
+buildRepeat ZeroOrMore = singleton '*'
+buildRepeat OneOrMore  = singleton '+'
 
 -- | A 'Builder' for an 'AttList'.
 buildAttList :: AttList -> Builder

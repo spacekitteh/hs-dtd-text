@@ -65,12 +65,12 @@ import Data.XML.DTD.Types
 import Data.XML.Types (ExternalID(PublicID, SystemID),
   Instruction(Instruction))
 import Data.Attoparsec.Text (Parser, try, satisfy, takeTill,
-  anyChar, char, digit, (<*.), (.*>))
+  anyChar, char, digit)
 import qualified Data.Attoparsec.Text as A -- for takeWhile
 import Data.Attoparsec.Text.Lazy (parse, Result(Done, Fail), maybeResult)
-import Data.Attoparsec.Combinator (many, manyTill, choice, sepBy1)
+import Data.Attoparsec.Combinator (many', manyTill, choice, sepBy1)
 import Data.Functor ((<$>))
-import Control.Applicative (pure, optional, (<*>), (<*), (*>), (<|>))
+import Control.Applicative (Applicative, pure, optional, (<*>), (<*), (*>), (<|>))
 import Control.Monad (guard, join)
 import Data.Text (Text)
 import Data.Char (isSpace)
@@ -171,7 +171,7 @@ markup = mkMarkup <$>
     ("<" .*> unquoted) <*>
     manyTillS ((:) . MTQuoted <$> try quoted <*> unquoted) ">"
   where
-    unquoted = chunk2 <$> unqText <*> many (list2 <$> pct <*> unqText)
+    unquoted = chunk2 <$> unqText <*> many' (list2 <$> pct <*> unqText)
     unqText = MTUnquoted <$> takeTill (`elem` "%>'\"")
     pct = "%" .*> (MTUnquoted <$> (ws *> pure "% ") <|>
                    MTPERef <$> takeTill (== ';') <*. ";")
@@ -225,7 +225,7 @@ handleEntity ext int cont e = DTDEntityDecl e' : parseCmps ext int' cont
     insertPE n v = M.insertWith (const id) n (Just v) int
     resolveEPE n = fmap (resolveValue int) $
                    M.lookup n ext >>= maybeResult . parse parseEPE
-    parseEPE = many $
+    parseEPE = many' $
       EntityPERef <$> try pERef <|> EntityText <$> takeTill (== '%')
 
 -- | Resolve nested parameter entity references in the value string
@@ -272,7 +272,7 @@ pERefText r = T.concat ["%", r, ";"]
 -- them.
 dtd :: Parser DTD
 dtd = DTD <$> (skipWS *> optional (textDecl <* skipWS)) <*>
-      many (dtdComponent <* skipWS)
+      many' (dtdComponent <* skipWS)
 
 -- | Parse an @?xml@ text declaration at the beginning of a 'DTD'.
 textDecl :: Parser DTDTextDecl
@@ -382,7 +382,7 @@ contentDecl = choice $ map try
   where
     pcdata = "(" .*> skipWS *> "#PCDATA" .*> skipWS *>
              (try tags <|> noTagsNoStar)
-    tags = many ("|" .*> skipWS *> nameSS) <*. ")*"
+    tags = many' ("|" .*> skipWS *> nameSS) <*. ")*"
     noTagsNoStar = ")" .*> pure []
 
 -- | Parse the model of structured content for an element.
@@ -407,7 +407,7 @@ repeatChar = choice
 -- | Parse a list of attribute declarations for an element.
 attList :: Parser AttList
 attList = AttList <$> ("<!ATTLIST" .*> ws *> skipWS *> nameSS) <*>
-                       many attDecl <*. ">"
+                       many' attDecl <*. ">"
 
 -- | Parse the three-part declaration of an attribute.
 attDecl :: Parser AttDecl
@@ -506,3 +506,14 @@ manyTillS = manyTill
 -- | Create a two-element list.
 list2 :: a -> a -> [a]
 list2 x y = [x, y]
+
+-- This is lifted from attoparsec-text library.
+-- | Same as @Applicative@'s @\<*@ but specialized to 'Text'
+-- on the second argument.
+(<*.) :: Applicative f => f a -> f Text -> f a
+(<*.) = (<*)
+
+-- | Same as @Applicative@'s @*\>@ but specialized to 'Text'
+-- on the first argument.
+(.*>) :: Applicative f => f Text -> f a -> f a
+(.*>) = (*>)
