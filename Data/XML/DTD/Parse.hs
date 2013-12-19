@@ -3,8 +3,9 @@
 -- |
 -- Module      :  Data.XML.DTD.Parse
 -- Copyright   :  Suite Solutions Ltd., Israel 2011
+--                (c) 2013 Montez Fitzpatrick
 --
--- Maintainer  :  Yitzchak Gale <gale@sefer.org>
+-- Maintainer  :  Montez Fitzpatrick <montezf@gmail.com>
 -- Portability :  portable
 --
 -- This module provides a "Data.Attoparsec.Text" parser for XML
@@ -513,6 +514,7 @@ list2 x y = [x, y]
 (<*.) :: Applicative f => f a -> f Text -> f a
 (<*.) = (<*)
 
+-- This is lifted from attoparsec-text library.
 -- | Same as @Applicative@'s @*\>@ but specialized to 'Text'
 -- on the first argument.
 (.*>) :: Applicative f => f Text -> f a -> f a

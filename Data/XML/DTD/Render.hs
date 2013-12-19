@@ -3,11 +3,12 @@
 -- |
 -- Module      :  Data.XML.DTD.Render
 -- Copyright   :  Suite Solutions Ltd., Israel 2011
+--                (c) 2013 Montez Fitzpatrick
 --
--- Maintainer  :  Yitzchak Gale <gale@sefer.org>
+-- Maintainer  :  Montez Fitzpatrick <montezf@gmail.com>
 -- Portability :  portable
 --
--- A "Blaze.ByteString.Builder" renderer for XML Document Type
+-- A "Data.Text.Lazy.Builder" renderer for XML Document Type
 -- Declaration (DTD) documents.
 
 {-
@@ -62,8 +63,6 @@ module Data.XML.DTD.Render
   ) 
   where
 
--- import Blaze.ByteString.Builder (Builder)
--- import Blaze.ByteString.Builder.Char.Utf8 (fromText, singleton)
 import Data.XML.DTD.Types
 import Data.XML.Types (ExternalID(..), Instruction(..))
 import Data.Text (Text)
@@ -71,8 +70,8 @@ import Data.Text.Lazy.Builder (Builder, fromText, singleton)
 import Data.Monoid (Monoid(..))
 import Data.List (intersperse)
 import System.IO (nativeNewline, Newline(CRLF))
--- No instance Semigroup Builder yet, so <> defined here manually.
---import Data.Semigroup ((<>))
+
+-- Inline Builder combinator
 (<>) = mappend
 
 -- | Build an optional item.
@@ -97,7 +96,7 @@ quote = (singleton '"' <>) . (<> singleton '"')
 pbracket :: Builder -> Builder
 pbracket = (fromText "<!" <>) . (<> singleton '>')
 
--- | Build a string surround by parantheses.
+-- | Build a string surround by parentheses.
 parens :: Builder -> Builder
 parens = (singleton '(' <>) . (<> singleton ')')
 
