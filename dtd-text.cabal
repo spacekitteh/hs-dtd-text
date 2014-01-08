@@ -5,14 +5,15 @@ description:
   This library provides means to parse XML Document Type Declaration (DTD) documents.
 license: BSD3
 license-file: license.txt
-author: Yitzchak Gale
-maintainer: Montez Fitzpatrick
+author: Yitzchak Gale,
+        Montez Fitzpatrick
+maintainer: Montez Fitzpatrick <montezf@gmail.com>
 build-type: Simple
 cabal-version: >=1.6
 category: Data, Text, XML, Parsing
 stability: experimental
-bug-reports: mailto:gale@sefer.org
-homepage: http://projects.haskell.org/dtd/
+bug-reports: https://github.com/m15k/hs-dtd-text/issues
+homepage: http://github.com/m15k/hs-dtd-text
 
 library
   build-depends:
