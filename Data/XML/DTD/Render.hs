@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 ------------------------------------------------------------------------------
 -- |
 -- Module      :  Data.XML.DTD.Render
@@ -71,9 +72,10 @@ import Data.Monoid (Monoid(..))
 import Data.List (intersperse)
 import System.IO (nativeNewline, Newline(CRLF))
 
+#if __GLASGOW_HASKELL__ < 800
 -- Inline Builder combinator
 (<>) = mappend
-
+#endif
 -- | Build an optional item.
 buildMaybe :: (a -> Builder) -> Maybe a -> Builder
 buildMaybe = maybe mempty
